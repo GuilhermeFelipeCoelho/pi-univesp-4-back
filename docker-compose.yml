@@ -1,0 +1,48 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    hostname: "rabbit"
+    ports:
+      - "15672:15672"  # Painel de administração
+      - "5672:5672"    # Porta padrão para conexões
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: admin
+      RABBITMQ_DEFAULT_PASS: admin
+
+  mysql:
+    image: mysql:5.7  # Ou a versão que preferir, ex: mysql:5.7
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root123
+      MYSQL_DATABASE: root123
+      MYSQL_USER: teste
+      MYSQL_PASSWORD: teste
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: root  # mesma senha do container MySQL
+      UPLOAD_LIMIT: 512M                     # ✅ define o limite de upload
+      PHP_UPLOAD_MAX_FILESIZE: 512M          # ✅ garante que o PHP aceite arquivos grandes
+      PHP_POST_MAX_SIZE: 512M
+    depends_on:
+      - mysql
+            
+      
+volumes:
+  rabbitmq_data:
